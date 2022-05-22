@@ -84,10 +84,14 @@ int	start_lists(t_list **envp_list, char **envp)
 	{
 		if (!mem_lists(envp_list, envp[i]))
 			return (0);
-		// 
-		// printf ("%d\n", i);
 		i++;
 	}
-	printf ("x1 = %p\n", *envp_list);
 	return (1);
+}
+
+void	print_error(int flag)
+{
+	if (flag == 0)
+		perror("Memmory not allocate!");
+	exit(EXIT_FAILURE);
 }

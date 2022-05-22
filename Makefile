@@ -1,6 +1,6 @@
 NAME = minishell
 
-SRC = main.c minishell_llist.c
+SRC = main.c minishell_llist.c minishell_init.c minishell_free_with_str.c minishell_lexer.c
 
 SRC_OBJ = $(SRC:%.c=%.o)
 
@@ -10,7 +10,7 @@ CC = cc
 
 CFLAGS = -MD -Wall -Wextra -Werror
 
-FSA = -fsanitize=thread
+FSA = -fsanitize=address
 
 RM = rm -f
 
