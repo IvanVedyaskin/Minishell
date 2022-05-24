@@ -16,11 +16,11 @@ RM = rm -f
 
 all : $(NAME)
 
-%.o: %.c
+%.o: %.c Makefile
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(SRC_OBJ)
-	$(CC) $(SRC_OBJ) -lreadline -o $@
+	$(CC) $(SRC_OBJ) $(FSA) -lreadline -o $@
 
 clean: 
 	$(RM) $(SRC_OBJ) $(SRC_D)

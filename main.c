@@ -2,12 +2,6 @@
 
 // Все команды исполняются в подпроцессах. Исключение - builtins
 
-
-// int	parser(t_info *info, char *p)
-// {
-// 	return (1);	
-// }
-
 char	*ft_readline(char *p)
 {
 	p = readline("minishell$ ");
@@ -16,11 +10,29 @@ char	*ft_readline(char *p)
 	return(p);
 }
 
+void	ft_check_print(t_token **token)
+{
+	t_token	*tmp;
+
+	tmp = *token;
+	if (tmp != NULL)
+	{
+		while (tmp->next != NULL)
+		{
+			printf ("%d ", tmp->token); 
+			tmp = tmp->next;
+		}
+		printf ("%d\n", tmp->token);
+	}
+}
+
 int	main(int ag, char **av, char **env)
 {
-	t_info	info;
-	char	*p;
-
+	t_info		info;
+	char		*p;
+	// t_command	*command;
+	
+	int i = 0;
 	(void) ag;
 	(void) av;
 	p = NULL;
@@ -31,8 +43,14 @@ int	main(int ag, char **av, char **env)
 		p = ft_readline(p);
 		// break;
 		lexer(&info, p);
-		break;
-		// parser(&info, p);
+		ft_check_print(&info.token);
+		// command = parser(&info, p);
+		all_free(&info, -1);
+		if (i == 5)
+			break;
+		i++;
+		free(p);
+		p = NULL;
 	}
 	// printf ("%p\n", info.token);
 	all_free(&info, 1);

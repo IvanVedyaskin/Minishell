@@ -5,21 +5,29 @@ void	free_token(t_token **token)
 	t_token	*tmp;
 
 	tmp = *token;
-	while (tmp->next != NULL)
+	if (tmp != NULL)
 	{
-		tmp = tmp->next;
+		while (tmp->next != NULL)
+		{
+			tmp = tmp->next;
+			free(*token);
+			*token = NULL;
+			*token = tmp;
+		}
 		free(*token);
-		*token = tmp;
+		*token = NULL;
 	}
-	free(*token);
 }
 
 void	all_free(t_info *info, int flag)
 {
-	ft_free_envp(info->envp);
-	ft_free_list(&info->envp_list);
-	if (info->token != NULL)
+	if (info->token != NULL) 
 		free_token(&info->token);
+	if (flag == 1)
+	{
+		ft_free_envp(info->envp);
+		ft_free_list(&info->envp_list);
+	}
 	if (flag == 0)
 		print_error(0);
 }
