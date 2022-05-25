@@ -30,7 +30,7 @@ int	main(int ag, char **av, char **env)
 {
 	t_info		info;
 	char		*p;
-	// t_command	*command;
+	t_command	*command;
 	
 	int i = 0;
 	(void) ag;
@@ -44,7 +44,7 @@ int	main(int ag, char **av, char **env)
 		// break;
 		lexer(&info, p);
 		ft_check_print(&info.token);
-		// command = parser(&info, p);
+		command = parser(&info, p);
 		all_free(&info, -1);
 		if (i == 5)
 			break;

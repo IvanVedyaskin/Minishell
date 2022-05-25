@@ -35,7 +35,7 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-typedef	struct s_commad
+typedef	struct s_command
 {
 	char				*str;
 	struct s_command	*next;

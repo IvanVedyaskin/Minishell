@@ -48,7 +48,7 @@ int	check_env(char *str, t_list *envp_list, t_command **command)
 	while (tmp != NULL)
 	{
 		if (ft_strcmp_v2(tmp->key, str))
-			return (create_command(command, &(tmp->value)));
+			return (create_command(command, tmp->value));
 		tmp = tmp->next;
 	}
 	flag = create_command(command, NULL);
@@ -74,6 +74,7 @@ int	run_str(int token, char *p, t_command **command, t_list *envp_list)
 	static int	i;
 	int			tmp;
 
+	(void) envp_list;
 	tmp = i;
 	if (token == 0)
 	{
@@ -90,22 +91,56 @@ int	run_str(int token, char *p, t_command **command, t_list *envp_list)
 		tmp = create_command(command, &(p[tmp]));
 		while (is_token(p[i]) == WORD)
 		{
-			while (is_token(p[i]) == WORD)
-			{
-				if (p[i] == '$')
-				{
-					tmp = my_dollar(&(p[i + 1]), command, envp_list);
-				}
-				i++;
-			}
-			if (p[i] == '$')
-				tmp = my_dollar(&(p[i + 1]), command, envp_list);
-			else
-				tmp = create_command(command, &(p[tmp]));
+			if (p[i] == '$' || p[i] == '?')
+				tmp = create_command(command, &(p[i]));
+			i++;
 		}
-
+	}
+	else if (token == 2)
+	{
+		tmp = create_command(command, &(p[tmp]));
+		i++;
+		while (is_token(p[i]) != 2 && p[i])
+			i++;
+		if (is_token(p[i]) == 2)
+			tmp = create_command(command, &(p[i]));
+	}
+	else if (token == 3)
+	{
+		tmp = create_command(command, &(p[tmp]));
+		i++;
+		while (p[i] && is_token(p[i]) != 3)
+		{
+			if (p[i] == '$' || p[i] == '?')
+				tmp = create_command(command, &(p[i]));
+			i++;
+		}
+		if (is_token(p[i]) == 3)
+			tmp = create_command(command, &(p[i]));
+	}
+	else
+	{
+		while (is_token(p[i]) > 3 && p[i])
+			i++;
+		tmp = 1;
 	}
 	return (tmp);
+}
+
+void	ft_check_print2(t_command **token)
+{
+	t_command	*tmp;
+
+	tmp = *token;
+	if (tmp != NULL)
+	{
+		while (tmp->next != NULL)
+		{
+			printf ("%s\n", tmp->str); 
+			tmp = tmp->next;
+		}
+		printf ("%s\n", tmp->str);
+	}
 }
 
 t_command	*parser(t_info *info, char *p)
@@ -117,8 +152,9 @@ t_command	*parser(t_info *info, char *p)
 	token = info->token;
 	while (token != NULL)
 	{
-		run_str(is_token(token->token), p, command, info->envp_list);
+		run_str((token->token), p, &command, info->envp_list);
 		token = token->next;
 	}
-	return (1);	
+	ft_check_print2(&command);
+	return (command);	
 }
