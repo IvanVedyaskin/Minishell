@@ -89,34 +89,25 @@ int	run_str(int token, char *p, t_command **command, t_list *envp_list)
 	else if (token == 1)
 	{
 		tmp = create_command(command, &(p[tmp]));
+		if (tmp == 0)
+			return (tmp);
+		tmp = i;
 		while (is_token(p[i]) == WORD)
 		{
-			if (p[i] == '$' || p[i] == '?')
+			if ((p[i] == '$' || p[i] == '?') && tmp != i)
 				tmp = create_command(command, &(p[i]));
 			i++;
 		}
 	}
-	else if (token == 2)
+	else if (token == 8 || (token >= 2 && token <= 5))
 	{
 		tmp = create_command(command, &(p[tmp]));
 		i++;
-		while (is_token(p[i]) != 2 && p[i])
-			i++;
-		if (is_token(p[i]) == 2)
-			tmp = create_command(command, &(p[i]));
 	}
-	else if (token == 3)
+	else if (token == 6 || token == 7)
 	{
 		tmp = create_command(command, &(p[tmp]));
-		i++;
-		while (p[i] && is_token(p[i]) != 3)
-		{
-			if (p[i] == '$' || p[i] == '?')
-				tmp = create_command(command, &(p[i]));
-			i++;
-		}
-		if (is_token(p[i]) == 3)
-			tmp = create_command(command, &(p[i]));
+		i+=2;
 	}
 	else
 	{
