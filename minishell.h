@@ -69,9 +69,11 @@ int			ft_strcmp(char *str, char *cmp);
 int			init(t_info *info, char **env);
 
 int			lexer(t_info *info, char *line);
-void		all_free(t_info *info, int flag);
+void		all_free(t_info *info, int flag, t_command **command);
 int			is_token(char c);
 t_command	*parser(t_info *info, char *p);
+void		ft_check_print2(t_command **token);
+int			check_fields(t_token **token);
 // void	set_word(char *res_word[7]);
 // int		init(t_info *info, char **env);
 #endif

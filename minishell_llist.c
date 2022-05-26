@@ -93,5 +93,10 @@ void	print_error(int flag)
 {
 	if (flag == 0)
 		perror("Memmory not allocate!");
-	exit(EXIT_FAILURE);
+	else if (flag == -1)
+	{
+		write (2, "minishell: Excepted ' or \"\n", 27);
+		return ;
+	}
+	exit (EXIT_FAILURE);
 }

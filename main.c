@@ -7,7 +7,7 @@ char	*ft_readline(char *p)
 	p = readline("minishell$ ");
 	if (p && *p)
 		add_history(p);
-	return(p);
+	return (p);
 }
 
 void	ft_check_print(t_token **token)
@@ -19,7 +19,7 @@ void	ft_check_print(t_token **token)
 	{
 		while (tmp->next != NULL)
 		{
-			printf ("%d ", tmp->token); 
+			printf ("%d ", tmp->token);
 			tmp = tmp->next;
 		}
 		printf ("%d\n", tmp->token);
@@ -31,7 +31,7 @@ int	main(int ag, char **av, char **env)
 	t_info		info;
 	char		*p;
 	t_command	*command;
-	
+
 	int i = 0;
 	(void) ag;
 	(void) av;
@@ -45,7 +45,8 @@ int	main(int ag, char **av, char **env)
 		lexer(&info, p);
 		ft_check_print(&info.token);
 		command = parser(&info, p);
-		all_free(&info, -1);
+		ft_check_print2(&command);
+		all_free(&info, 2, &command);
 		if (i == 5)
 			break;
 		i++;
@@ -53,7 +54,7 @@ int	main(int ag, char **av, char **env)
 		p = NULL;
 	}
 	// printf ("%p\n", info.token);
-	all_free(&info, 1);
+	all_free(&info, 1, &command);
 	free(p);
 	return (0);
 }

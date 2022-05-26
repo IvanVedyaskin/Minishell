@@ -19,23 +19,43 @@ void	free_token(t_token **token)
 	}
 }
 
-void	all_free(t_info *info, int flag)
+void	ft_free_command(t_command **command)
 {
-	if (info->token != NULL) 
+	t_command	*tmp;
+
+	tmp = *command;
+	while (tmp->next != NULL)
+	{
+		tmp = tmp->next;
+		free(*command);
+		*command = tmp;
+	}
+	free(*command);
+	*command = NULL;
+}
+
+void	all_free(t_info *info, int flag, t_command **command)
+{
+	(void)	command;
+	if (info->token != NULL)
 		free_token(&info->token);
+	if (command != NULL && *command != NULL)
+		ft_free_command(command);
 	if (flag == 1)
 	{
 		ft_free_envp(info->envp);
 		ft_free_list(&info->envp_list);
 	}
-	if (flag == 0)
+	else if (flag == 0)
 		print_error(0);
+	else if (flag == -1)
+		print_error(-1);
 }
 
 int	create_list_token(t_token **token, int data)
 {
 	t_token	*tmp;
-	t_token *tmp2;
+	t_token	*tmp2;
 
 	tmp2 = *token;
 	tmp = (t_token *)malloc(sizeof(t_token));
@@ -56,7 +76,8 @@ int	create_list_token(t_token **token, int data)
 
 int	is_token(char c)
 {
-	if (c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r' || c == ' ')
+	if (c == '\t' || c == '\n' || c == '\v' || \
+			c == '\f' || c == '\r' || c == ' ')
 		return (SEP);
 	else if (c == 39)
 		return (FIELD);
@@ -96,11 +117,11 @@ int	token_not_redir(char c, int flag, t_info *info)
 		res = create_list_token(&info->token, PIPE);
 	flag = is_token(c);
 	if (res == 0)
-		all_free(info, 0);
+		all_free(info, 0, NULL);
 	return (flag);
 }
 
-int token_is_redir(char c, int *flag, int *i)
+int	token_is_redir(char c, int *flag, int *i)
 {
 	if (is_token(c) == REDIR_OUT)
 	{
@@ -126,7 +147,6 @@ int	lexer(t_info *info, char *line)
 	int		i;
 	int		flag;
 
-	(void) info;
 	i = 0;
 	flag = -1;
 	while (line[i])
@@ -139,5 +159,10 @@ int	lexer(t_info *info, char *line)
 		}
 		i++;
 	}
-	return (0);
+	if (!check_fields(&info->token))
+	{
+		all_free(info, -1, NULL);
+		return (0);
+	}
+	return (1);
 }

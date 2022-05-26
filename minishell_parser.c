@@ -69,20 +69,18 @@ int	my_dollar(char *str, t_command **command, t_list *envp_list)
 	return (flag);
 }
 
-int	run_str(int token, char *p, t_command **command, t_list *envp_list)
+int	in_str_token(int token, char *p, t_command **command, int *i)
 {
-	static int	i;
-	int			tmp;
+	int	tmp;
 
-	(void) envp_list;
-	tmp = i;
+	tmp = *i;
 	if (token == 0)
 	{
-		while (is_token(p[i]) == SEP)
-			i++;
+		while (is_token(p[*i]) == SEP)
+			(*i)++;
 		if (tmp != 0)
 		{
-			if (p[i])
+			if (p[*i])
 				tmp = create_command(command, &(p[tmp]));
 		}
 	}
@@ -91,28 +89,36 @@ int	run_str(int token, char *p, t_command **command, t_list *envp_list)
 		tmp = create_command(command, &(p[tmp]));
 		if (tmp == 0)
 			return (tmp);
-		tmp = i;
-		while (is_token(p[i]) == WORD)
+		while (is_token(p[++(*i)]) == WORD)
 		{
-			if ((p[i] == '$' || p[i] == '?') && tmp != i)
-				tmp = create_command(command, &(p[i]));
-			i++;
+			if (p[*i] == '$')
+				tmp = create_command(command, &(p[*i]));
 		}
 	}
+	return (tmp);
+}
+
+int	run_str(int token, char *p, t_command **command, int *i)
+{
+	int			tmp;
+
+	tmp = *i;
+	if (token == 0 || token == 1)
+		tmp = in_str_token(token, p, command, i);
 	else if (token == 8 || (token >= 2 && token <= 5))
 	{
 		tmp = create_command(command, &(p[tmp]));
-		i++;
+		(*i)++;
 	}
 	else if (token == 6 || token == 7)
 	{
 		tmp = create_command(command, &(p[tmp]));
-		i+=2;
+		*i = *i + 2;
 	}
 	else
 	{
-		while (is_token(p[i]) > 3 && p[i])
-			i++;
+		while (is_token(p[*i]) > 3 && p[*i])
+			(*i)++;
 		tmp = 1;
 	}
 	return (tmp);
@@ -127,25 +133,68 @@ void	ft_check_print2(t_command **token)
 	{
 		while (tmp->next != NULL)
 		{
-			printf ("%s\n", tmp->str); 
+			printf ("%s\n", tmp->str);
 			tmp = tmp->next;
 		}
 		printf ("%s\n", tmp->str);
 	}
 }
 
+int	check_fields(t_token **token)
+{
+	t_token	*tmp;
+
+	tmp = *token;
+	while (tmp != NULL)
+	{
+		if (tmp->token == FIELD)
+		{
+			tmp = tmp->next;
+			while (tmp != NULL && tmp->token != FIELD)
+				tmp = tmp->next;
+		}
+		else if (tmp->token == EXP_FIELD)
+		{
+			tmp = tmp->next;
+			while (tmp != NULL && tmp->token != EXP_FIELD)
+			{
+				tmp = tmp->next;
+			}
+		}
+		if (tmp == NULL)
+			return (0);
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
 t_command	*parser(t_info *info, char *p)
 {
 	t_token		*token;
 	t_command	*command;
+	int			flag;
+	int			i;
 
+
+	flag = 1;
+	i = 0;
 	command = NULL;
 	token = info->token;
 	while (token != NULL)
 	{
-		run_str((token->token), p, &command, info->envp_list);
+		flag = run_str((token->token), p, &command, &i);
 		token = token->next;
 	}
-	ft_check_print2(&command);
-	return (command);	
+	return (command);
 }
+
+// пока лист
+// 	если &this == &next
+//		значит, что дошел до следующей части.
+// пока лист
+//	Если this == $
+//		если &this == &next
+//			Значит это отправится на проверку переменной окружения
+//	Если this == '
+//		внутри данных ковычек все "" остаются и внутри не расерываются. Нужно доходить до самой дальней '. Отсальные 					одинарные ковычки опускаются
+//

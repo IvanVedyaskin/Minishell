@@ -13,20 +13,22 @@ void	*ft_free_list(t_list **envp_list)
 		free(*envp_list);
 		*envp_list = tmp;
 	}
-	free(tmp->key);
-	free(tmp->value);
-	free(tmp);
+	free((*envp_list)->key);
+	free((*envp_list)->value);
+	free((*envp_list));
+	*envp_list = NULL;
 	return (NULL);
 }
 
 void	**ft_free_envp(char **envp)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (envp[i] != NULL)
 		free(envp[i++]);
 	free(envp);
+	envp = NULL;
 	return (NULL);
 }
 
