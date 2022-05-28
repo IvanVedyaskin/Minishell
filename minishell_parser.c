@@ -22,52 +22,36 @@ int	create_command(t_command **command, char *date)
 	return (1);
 }
 
-int	ft_strcmp_v2(char *cmp, char *str)
-{
-	int	i;
+// int	check_env(char *str, t_list *envp_list, t_command **command)
+// {
+// 	t_list	*tmp;
+// 	int		flag;
 
-	i = 0;
-	while (str[i] && cmp[i])
-	{
-		if (str[i] != cmp[i])
-			return (0);
-		i++;
-	}
-	if (!cmp[i] && is_token(str[i]) != WORD)
-		return (1);
-	return (0);
-}
+// 	flag = 1;
+// 	tmp = envp_list;
+// 	while (tmp != NULL)
+// 	{
+// 		if (ft_strcmp_v2(tmp->key, str))
+// 			return (create_command(command, tmp->value));
+// 		tmp = tmp->next;
+// 	}
+// 	flag = create_command(command, NULL);
+// 	return (flag);
+// }
 
-int	check_env(char *str, t_list *envp_list, t_command **command)
-{
-	t_list	*tmp;
-	int		flag;
+// int	my_dollar(char *str, t_command **command, t_list *envp_list)
+// {
+// 	int	i;
+// 	int	flag;
 
-	flag = 1;
-	tmp = envp_list;
-	while (tmp != NULL)
-	{
-		if (ft_strcmp_v2(tmp->key, str))
-			return (create_command(command, tmp->value));
-		tmp = tmp->next;
-	}
-	flag = create_command(command, NULL);
-	return (flag);
-}
-
-int	my_dollar(char *str, t_command **command, t_list *envp_list)
-{
-	int	i;
-	int	flag;
-
-	flag = 1;
-	i = 0;
-	if (str[i] == '$' || str[i] == '?')
-		flag = create_command(command, &str[i]);
-	else if (is_token(str[i]) == WORD)
-		flag = check_env(str, envp_list, command);
-	return (flag);
-}
+// 	flag = 1;
+// 	i = 0;
+// 	if (str[i] == '$' || str[i] == '?')
+// 		flag = create_command(command, &str[i]);
+// 	else if (is_token(str[i]) == WORD)
+// 		flag = check_env(str, envp_list, command);
+// 	return (flag);
+// }
 
 int	in_str_token(int token, char *p, t_command **command, int *i)
 {
@@ -105,7 +89,7 @@ int	run_str(int token, char *p, t_command **command, int *i)
 	tmp = *i;
 	if (token == 0 || token == 1)
 		tmp = in_str_token(token, p, command, i);
-	else if (token == 8 || (token >= 2 && token <= 5))
+	else if (token == 8 || (token >= 3 && token <= 5))
 	{
 		tmp = create_command(command, &(p[tmp]));
 		(*i)++;
@@ -117,9 +101,11 @@ int	run_str(int token, char *p, t_command **command, int *i)
 	}
 	else
 	{
-		while (is_token(p[*i]) > 3 && p[*i])
+		tmp = create_command(command, &(p[(*i)++]));
+		while (is_token(p[*i]) != 2 && p[*i])
 			(*i)++;
-		tmp = 1;
+		if (is_token(p[*i]) == 2)
+			++*i;
 	}
 	return (tmp);
 }
@@ -168,6 +154,18 @@ int	check_fields(t_token **token)
 	return (1);
 }
 
+int	skip_field(t_token **token)
+{
+	if ((*token)->token == 2)
+	{
+		*token = (*token)->next;
+		while ((*token)->token != 2)
+			*token = (*token)->next;
+		return (1);
+	}
+	return (0);
+}
+
 t_command	*parser(t_info *info, char *p)
 {
 	t_token		*token;
@@ -183,8 +181,11 @@ t_command	*parser(t_info *info, char *p)
 	while (token != NULL)
 	{
 		flag = run_str((token->token), p, &command, &i);
+		skip_field(&token);
 		token = token->next;
 	}
+	if (command != NULL)
+		parser_next(&command, info);
 	return (command);
 }
 

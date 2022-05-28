@@ -74,6 +74,8 @@ int			is_token(char c);
 t_command	*parser(t_info *info, char *p);
 void		ft_check_print2(t_command **token);
 int			check_fields(t_token **token);
+
+int			parser_next(t_command **command, t_info *info);
 // void	set_word(char *res_word[7]);
 // int		init(t_info *info, char **env);
 #endif
