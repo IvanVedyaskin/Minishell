@@ -41,8 +41,11 @@ typedef	struct s_command
 	struct s_command	*next;
 }	t_command;
 
+// typedef int (*t_builtin_ptr)(t_list *list, struct s_info *info);
+
 typedef struct s_info
 {
+									// массив функций ключевых слов
 	char			*res_word[7];	// ключевые слова
 	char			**envp;     	// переменная окружения
 	t_list			*envp_list;		// переменная окружения в листe
@@ -54,7 +57,11 @@ typedef struct s_info
 
 typedef int (*t_builtin_ptr)(t_list *list, struct s_info *info);
 
-t_builtin_ptr	builtins[7];	// массив функций ключевых слов
+t_builtin_ptr	builtins[7];
+
+// typedef int (*t_builtin_ptr)(t_list *list, struct s_info *info);
+
+// t_builtin_ptr	builtins[7];	// массив функций ключевых слов
 
 int			ft_strlen(char *str);
 int			mem_lists(t_list **envp_list, char *str);
@@ -74,6 +81,7 @@ int			is_token(char c);
 t_command	*parser(t_info *info, char *p);
 void		ft_check_print2(t_command **token);
 int			check_fields(t_token **token);
+int			skip_field(t_token **token, int x);
 
 int			parser_next(t_command **command, t_info *info);
 // void	set_word(char *res_word[7]);

@@ -98,5 +98,10 @@ void	print_error(int flag)
 		write (2, "minishell: Excepted ' or \"\n", 27);
 		return ;
 	}
+	else if (flag == -2)
+	{
+		write (2, "minishell: Syntax error\n", 25);
+		return ;
+	}
 	exit (EXIT_FAILURE);
 }

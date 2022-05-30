@@ -154,12 +154,12 @@ int	check_fields(t_token **token)
 	return (1);
 }
 
-int	skip_field(t_token **token)
+int	skip_field(t_token **token, int x)
 {
-	if ((*token)->token == 2)
+	if ((*token)->token == x)
 	{
 		*token = (*token)->next;
-		while ((*token)->token != 2)
+		while ((*token)->token != x)
 			*token = (*token)->next;
 		return (1);
 	}
@@ -181,7 +181,7 @@ t_command	*parser(t_info *info, char *p)
 	while (token != NULL)
 	{
 		flag = run_str((token->token), p, &command, &i);
-		skip_field(&token);
+		skip_field(&token, FIELD);
 		token = token->next;
 	}
 	if (command != NULL)

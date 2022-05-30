@@ -46,10 +46,8 @@ void	all_free(t_info *info, int flag, t_command **command)
 		ft_free_envp(info->envp);
 		ft_free_list(&info->envp_list);
 	}
-	else if (flag == 0)
-		print_error(0);
-	else if (flag == -1)
-		print_error(-1);
+	if (flag < 1)
+		print_error(flag);
 }
 
 int	create_list_token(t_token **token, int data)
@@ -142,6 +140,76 @@ int	token_is_redir(char c, int *flag, int *i)
 	return (1);
 }
 
+// int	skip_field2(t_token **token)
+// {
+// 	if ((*token)->token == 3)
+// 	{
+// 		*token = (*token)->next;
+// 		while ((*token)->token != 3)
+// 			*token = (*token)->next;
+// 		return (1);
+// 	}
+// 	return (0);
+// }
+
+int	check_pipes_next(t_token *tmp)
+{
+	while (tmp != NULL)
+	{
+		skip_field(&tmp, EXP_FIELD);
+		skip_field(&tmp, FIELD); 
+		if (tmp->token == 8)
+		{
+			if (tmp->next == NULL)
+				return (0);
+			else if (tmp->next->token == 0 && tmp->next->next == NULL)
+				return (0);
+			else if (tmp->next->token == 8)
+				return (0);
+		}
+	tmp = tmp->next;
+	}
+	return (1);
+}
+
+int	check_pipes(t_token **token)
+{
+	t_token	*tmp;
+
+	tmp = *token;
+	if (tmp != NULL)
+	{
+		if (tmp->token == 8)
+			return (0);
+		else if (tmp->token == 0 && tmp->next != NULL && tmp->next->token == 8)
+			return (0);
+	}
+	return (check_pipes_next(tmp));
+}
+
+int check_redirects(t_token **token)
+{
+	t_token	*tmp;
+
+	tmp = *token;
+	while (tmp != NULL)
+	{
+		skip_field(&tmp, EXP_FIELD);
+		skip_field(&tmp, FIELD); 
+		if (tmp->token >= 4 && tmp->token <= 7)
+		{
+			if (tmp->next == NULL)
+				return (0);
+			else if (tmp->next->token == 0 && tmp->next->next == NULL)
+				return (0);
+			else if (tmp->next->token >= 4 && tmp->next->token <= 7)
+				return (0);
+		}
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
 int	lexer(t_info *info, char *line)
 {
 	int		i;
@@ -159,9 +227,17 @@ int	lexer(t_info *info, char *line)
 		}
 		i++;
 	}
-	if (!check_fields(&info->token))
+	if (!check_fields(&info->token) || !check_pipes(&info->token))
 	{
-		all_free(info, -1, NULL);
+		if (!check_fields(&info->token))
+			all_free(info, -1, NULL);
+		else
+			all_free(info, -2, NULL);
+		return (0);
+	}
+	else if (!check_redirects(&info->token))
+	{
+		all_free(info, -2, NULL);
 		return (0);
 	}
 	return (1);
