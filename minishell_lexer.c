@@ -166,6 +166,8 @@ int	check_pipes_next(t_token *tmp)
 				return (0);
 			else if (tmp->next->token == 8)
 				return (0);
+			else if (tmp->next->next->token == 8)
+				return (0);
 		}
 	tmp = tmp->next;
 	}
@@ -203,6 +205,8 @@ int check_redirects(t_token **token)
 			else if (tmp->next->token == 0 && tmp->next->next == NULL)
 				return (0);
 			else if (tmp->next->token >= 4 && tmp->next->token <= 7)
+				return (0);
+			else if (tmp->next->next->token >= 4 && tmp->next->next->token <= 7)
 				return (0);
 		}
 		tmp = tmp->next;
