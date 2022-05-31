@@ -166,7 +166,7 @@ int	check_pipes_next(t_token *tmp)
 				return (0);
 			else if (tmp->next->token == 8)
 				return (0);
-			else if (tmp->next->next->token == 8)
+			else if (tmp->next->next->token == 8 && tmp->next->token == 0)
 				return (0);
 		}
 	tmp = tmp->next;
@@ -214,6 +214,22 @@ int check_redirects(t_token **token)
 	return (1);
 }
 
+int	all_check(t_info *info)
+{
+	int	x;
+
+	x = 0;
+	if (!check_fields(&info->token))
+		x = -1;
+	else if (!check_pipes(&info->token))
+		x = -2;
+	else if (!check_redirects(&info->token))
+		x = -3;
+	if (x != 0)
+		all_free(info, x, NULL);
+	return (0);
+}
+
 int	lexer(t_info *info, char *line)
 {
 	int		i;
@@ -231,18 +247,6 @@ int	lexer(t_info *info, char *line)
 		}
 		i++;
 	}
-	if (!check_fields(&info->token) || !check_pipes(&info->token))
-	{
-		if (!check_fields(&info->token))
-			all_free(info, -1, NULL);
-		else
-			all_free(info, -2, NULL);
-		return (0);
-	}
-	else if (!check_redirects(&info->token))
-	{
-		all_free(info, -2, NULL);
-		return (0);
-	}
+	all_check(info);
 	return (1);
 }

@@ -75,7 +75,7 @@ int	in_str_token(int token, char *p, t_command **command, int *i)
 			return (tmp);
 		while (is_token(p[++(*i)]) == WORD)
 		{
-			if (p[*i] == '$')
+			if (p[*i] == '$' || is_not_word(p[*i]))
 				tmp = create_command(command, &(p[*i]));
 		}
 	}

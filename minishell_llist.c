@@ -100,7 +100,7 @@ void	print_error(int flag)
 	}
 	else if (flag == -2)
 	{
-		write (2, "minishell: Syntax error\n", 25);
+		write (2, "minishell: Syntax error near unexpected token `|'\n", 51);
 		return ;
 	}
 	exit (EXIT_FAILURE);

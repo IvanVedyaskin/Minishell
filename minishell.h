@@ -84,6 +84,7 @@ int			check_fields(t_token **token);
 int			skip_field(t_token **token, int x);
 
 int			parser_next(t_command **command, t_info *info);
+int			is_not_word(int x);
 // void	set_word(char *res_word[7]);
 // int		init(t_info *info, char **env);
 #endif

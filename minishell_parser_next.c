@@ -1,5 +1,21 @@
 #include "minishell.h"
 
+int	is_not_word(int x)
+{
+	if (x < 48)
+		return (1);
+	else if (x > 90 && x < 97)
+	{
+		if (x != 95)
+			return (1);
+	}
+	else if (x > 122 && x <= 127)
+		return (1);
+	else if (x > 57 && x < 65)
+		return (1);
+	return (0);
+}
+
 int	ft_strcmp_v2(char *cmp, char *str)
 {
 	int	i;
@@ -12,7 +28,7 @@ int	ft_strcmp_v2(char *cmp, char *str)
 			return (0);
 		i++;
 	}
-	if (!cmp[i] && (is_token(str[i]) != WORD || str[i] == '$'))
+	if (!cmp[i] && (is_not_word(str[i]) || str[i] == '$'))
 		return (1);
 	return (0);
 }
