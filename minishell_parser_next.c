@@ -96,7 +96,12 @@ int	parser_next(t_command **command, t_info *info)
 			if (is_token(*((tmp->str) + 1)) == WORD)
 			{
 				if (*((tmp->str) + 1) != '$' && *((tmp->str) + 1) != '?')
-					tmp->str = check_env_var(info->envp_list, tmp->str);
+				{
+					if (!is_not_word(*((tmp->str) + 1)))
+						tmp->str = check_env_var(info->envp_list, tmp->str);
+				}
+				else if (*((tmp->str) + 1) == '?')
+					info->status = 0;
 			}
 		}
 		tmp = tmp->next;

@@ -89,18 +89,19 @@ int	start_lists(t_list **envp_list, char **envp)
 	return (1);
 }
 
-void	print_error(int flag)
+void	print_error(t_info *info, int flag)
 {
 	if (flag == 0)
 		perror("Memmory not allocate!");
-	else if (flag == -1)
+	else if (flag < 0)
 	{
-		write (2, "minishell: Excepted ' or \"\n", 27);
-		return ;
-	}
-	else if (flag == -2)
-	{
-		write (2, "minishell: Syntax error near unexpected token `|'\n", 51);
+		if (flag == -1)
+			write (2, "minishell: Excepted ' or \"\n", 28);
+		else if (flag == -2)
+			write (2, "minishell: Syntax error near unexpected token `|'\n", 51);
+		else if (flag == -3)
+			write (2, "syntax error near unexpected token `newline', `>' or `<'\n", 58);
+		info->status = 258;
 		return ;
 	}
 	exit (EXIT_FAILURE);

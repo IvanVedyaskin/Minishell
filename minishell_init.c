@@ -69,10 +69,13 @@ int	init(t_info *info, char **env)
 	info->envp_list = NULL;
 	set_word(info->res_word);
 	info->envp = init_envp(env);
-	if (info->envp == NULL)
-		print_error(0);
-	if (!start_lists(&info->envp_list, info->envp))
-		print_error(0);
+	info->status = 0;
 	info->token = NULL;
+	info->exit_f = 0;
+	info->envp_f = 0;
+	if (info->envp == NULL)
+		print_error(info, 0);
+	if (!start_lists(&info->envp_list, info->envp))
+		print_error(info, 0);
 	return (1);
 }

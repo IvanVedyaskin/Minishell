@@ -47,7 +47,7 @@ void	all_free(t_info *info, int flag, t_command **command)
 		ft_free_list(&info->envp_list);
 	}
 	if (flag < 1)
-		print_error(flag);
+		print_error(info, flag);
 }
 
 int	create_list_token(t_token **token, int data)
@@ -162,11 +162,12 @@ int	check_pipes_next(t_token *tmp)
 		{
 			if (tmp->next == NULL)
 				return (0);
-			else if (tmp->next->token == 0 && tmp->next->next == NULL)
-				return (0);
 			else if (tmp->next->token == 8)
 				return (0);
-			else if (tmp->next->next->token == 8 && tmp->next->token == 0)
+			else if (tmp->next->token == 0 && tmp->next->next == NULL)
+				return (0);
+			else if (tmp->next->next != NULL && \
+					tmp->next->next->token == 8 && tmp->next->token == 0)
 				return (0);
 		}
 	tmp = tmp->next;
@@ -197,16 +198,17 @@ int check_redirects(t_token **token)
 	while (tmp != NULL)
 	{
 		skip_field(&tmp, EXP_FIELD);
-		skip_field(&tmp, FIELD); 
+		skip_field(&tmp, FIELD);
 		if (tmp->token >= 4 && tmp->token <= 7)
 		{
 			if (tmp->next == NULL)
 				return (0);
-			else if (tmp->next->token == 0 && tmp->next->next == NULL)
-				return (0);
 			else if (tmp->next->token >= 4 && tmp->next->token <= 7)
 				return (0);
-			else if (tmp->next->next->token >= 4 && tmp->next->next->token <= 7)
+			else if (tmp->next->token == 0 && tmp->next->next == NULL)
+				return (0);
+			else if (tmp->next->next != NULL && tmp->next->token == 0 && \
+					tmp->next->next->token >= 4 && tmp->next->next->token <= 7)
 				return (0);
 		}
 		tmp = tmp->next;
@@ -214,7 +216,54 @@ int check_redirects(t_token **token)
 	return (1);
 }
 
-int	all_check(t_info *info)
+int	sub_check(int token, char *p, int *i)
+{
+	if (token == WORD)
+	{
+		while (is_token(p[*i]) == WORD)
+		{
+			if (p[*i] == 92 || p[*i] == ';')
+				return (0);
+			++*i;
+		}
+	}
+	else
+	{
+		if (token == 2 || token == 3)
+		{
+			++*i;
+			while (is_token(p[*i]) != token && p[*i])
+				++*i;
+			++*i;
+		}
+		else
+		{
+			while (is_token(p[*i]) == token && p[*i])
+				++*i;
+		}
+	}
+	return (1);
+}
+
+int	check_new_lines(t_token **token, char *p)
+{
+	t_token	*tmp;
+	int		i;
+
+	i = 0;
+	tmp = *token;
+	while (tmp != NULL)
+	{
+		if (!sub_check(tmp->token, p, &i))
+			return (0);
+		skip_field(&tmp, FIELD);
+		skip_field(&tmp, EXP_FIELD);
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
+int	all_check(t_info *info, char *p)
 {
 	int	x;
 
@@ -223,7 +272,7 @@ int	all_check(t_info *info)
 		x = -1;
 	else if (!check_pipes(&info->token))
 		x = -2;
-	else if (!check_redirects(&info->token))
+	else if (!check_redirects(&info->token) || !check_new_lines(&info->token, p))
 		x = -3;
 	if (x != 0)
 		all_free(info, x, NULL);
@@ -247,6 +296,6 @@ int	lexer(t_info *info, char *line)
 		}
 		i++;
 	}
-	all_check(info);
+	all_check(info, line);
 	return (1);
 }

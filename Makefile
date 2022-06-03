@@ -1,6 +1,7 @@
 NAME = minishell
 
-SRC = main.c minishell_llist.c minishell_init.c minishell_free_with_str.c minishell_lexer.c minishell_parser.c minishell_parser_next.c
+SRC = main.c minishell_llist.c minishell_init.c minishell_free_with_str.c minishell_lexer.c minishell_pre_parser.c minishell_parser_next.c \
+		minishell_to_array.c
 
 SRC_OBJ = $(SRC:%.c=%.o)
 

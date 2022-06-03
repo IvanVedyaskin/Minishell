@@ -44,7 +44,9 @@ int	main(int ag, char **av, char **env)
 		// break;
 		lexer(&info, p);
 		ft_check_print(&info.token);
-		command = parser(&info, p);
+		command = pre_parser(&info, p);
+		parser(&info, &command);
+		// parser(&info, &command);
 		ft_check_print2(&command);
 		all_free(&info, 2, &command);
 		if (i == 5)
