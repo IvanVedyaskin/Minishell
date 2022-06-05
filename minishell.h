@@ -38,6 +38,7 @@ typedef struct s_token
 typedef	struct s_command
 {
 	char				*str;
+	int					flag;
 	struct s_command	*next;
 }	t_command;
 
