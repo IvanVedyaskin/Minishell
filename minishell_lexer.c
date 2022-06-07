@@ -27,20 +27,22 @@ void	ft_free_command(t_command **command)
 	while (tmp->next != NULL)
 	{
 		tmp = tmp->next;
+		free((*command)->str);
 		free(*command);
 		*command = tmp;
 	}
+	free((*command)->str);
 	free(*command);
 	*command = NULL;
 }
 
 void	all_free(t_info *info, int flag, t_command **command)
 {
-	(void)	command;
 	if (info->token != NULL)
 		free_token(&info->token);
-	if (command != NULL && *command != NULL)
+	if (command != NULL && *command != NULL) {
 		ft_free_command(command);
+	}
 	if (flag == 1)
 	{
 		ft_free_envp(info->envp);

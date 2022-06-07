@@ -13,7 +13,7 @@ int	create_command(t_command **command, char *date, int flag)
 	tmp2->str = date;
 	tmp2->flag = 1;
 	if (flag == 0)
-			tmp2->flag = 1;
+			tmp2->flag = 0;
 	if (tmp1 == NULL)
 		*command = tmp2;
 	else
@@ -204,16 +204,16 @@ t_command	*pre_parser(t_info *info, char *p)
 {
 	t_token		*token;
 	t_command	*command;
-	int			flag;
+//	int			flag;
 	int			i;
 
-	flag = 1;
+//	flag = 1;
 	i = 0;
 	command = NULL;
 	token = info->token;
 	while (token != NULL)
 	{
-		flag = run_str((token->token), p, &command, &i);
+		run_str((token->token), p, &command, &i);
 		skip_field(&token, FIELD);
 		skip_field(&token, EXP_FIELD);
 		token = token->next;

@@ -6,6 +6,7 @@
 # include <signal.h>
 # include <unistd.h>
 # include <readline/history.h>
+# include <readline/readline.h>
 
 # define SEP 0
 # define WORD 1

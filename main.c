@@ -45,11 +45,11 @@ int	main(int ag, char **av, char **env)
 		lexer(&info, p);
 		ft_check_print(&info.token);
 		command = pre_parser(&info, p);
-		parser(&info, &command);
+//		parser(&info, &command);
 		// parser(&info, &command);
 		ft_check_print2(&command);
 		all_free(&info, 2, &command);
-		if (i == 5)
+		if (i == 0)
 			break;
 		i++;
 		free(p);

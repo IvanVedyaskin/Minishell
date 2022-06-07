@@ -21,7 +21,6 @@ int	ft_strcmp_v2(char *cmp, char *str)
 	int	i;
 
 	i = 0;
-	// printf ("%s    %s\n", cmp, str);
 	while (str[i] && cmp[i])
 	{
 		if (str[i] != cmp[i])
@@ -84,44 +83,51 @@ char	*check_env_var(t_list *envp_list, char *str)
 // 	}
 // }
 
-char	*refractor_command(char *str, char *env)
+char	*ft_copy(char *dst, char *src, char *env)
 {
-	int		i;
-	char	*new_str;
-	int		x;
-	int		j;
+	int i;
+	int j;
+	int k;
 
+	k = 0;
 	j = 0;
 	i = 0;
-	x = 0;
-	while (str[i] && str[i] != '$')
-		i++;
-	if (str[i])
+	while (src[j] && src[j] != '$')
+		dst[i++] = src[j++];
+	j++;
+	while (!is_not_word(src[j]))
+		++j;
+//	printf ("%s %d\n", src, j);
+	if (env != NULL)
 	{
-		while (str[i] && !is_not_word(str[i]))
-			i++;
+		while (env[k])
+			dst[i++] = env[k++];
 	}
-	i += ft_strlen(env);
-	new_str = (char *)malloc(sizeof(char) * i);
+	while (src[j])
+		dst[i++] = src[j++];
+	dst[i] = '\0';
+	return (dst);
+}
+
+char	*re_command(char *str, char *env, int i)
+{
+    int		count;
+//	int 	j;
+	char	*new_str;
+
+//	j = 0;
+	count = i++;
+	while (!is_not_word(str[i]))
+		++i;
+	if (env != NULL)
+		new_str = (char *)malloc(sizeof (char) * (ft_strlen(str) - 1 - i + count + ft_strlen(env)));
+	else
+		new_str = (char *)malloc(sizeof (char) * (ft_strlen(str) - i + count));
 	if (!new_str)
-		return (0);
-	i = 0;
-	while (str[i] && str[i] != '$')
-		new_str[j++] = str[i++];
-	while (env[x])
-		new_str[j++] = env[x++];
-	if (str[i])
-	{
-		while (str[i] && !is_not_word(str[i]))
-			i++;
-	}
-	while (str[i] && str[i] != '$')
-		new_str[j++] = str[i++];
-	new_str[j] = '\0';
-	// printf ("%s\n", new_str);
+		return (NULL);
+	new_str = ft_copy(new_str, str, env);
 	free(str);
-	str = NULL;
-	return(new_str);
+	return (new_str);
 }
 
 int	opening_dollar(t_command *cmd, int *i, t_info *info)
@@ -134,12 +140,10 @@ int	opening_dollar(t_command *cmd, int *i, t_info *info)
 		if (cmd->str[*i] == '$')
 		{
 			tmp = check_env_var(info->envp_list, &(cmd->str[*i + 1]));
-			printf ("cmd = %s\n", cmd->str);
 			if (tmp != NULL)
-			{
-							printf ("here\n");
-				cmd->str = refractor_command(cmd->str, tmp);
-			}
+				cmd->str = re_command(cmd->str, tmp, *i);
+			else
+				cmd->str = re_command(cmd->str, tmp, *i);
 		}
 		++*i;
 	}
@@ -155,10 +159,10 @@ int	parser_next(t_command **command, t_info *info)
 	tmp = *command;
 	while (tmp != NULL)
 	{
+		printf ("tmp = %d\n",tmp->flag);
 		if (tmp->flag == 1)
-		{
 			opening_dollar(tmp, &i, info);
-		}
+		i = 0;
 		tmp = tmp->next;
 	}
 	return (0);

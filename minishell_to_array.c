@@ -71,11 +71,12 @@ int	list_to_array(int token, t_command *tmp)
 
 int	parser(t_info *info, t_command **command)
 {
-	t_command	*tmp;
+//	t_command	*tmp;
 	(void)	info;
+    (void)  command;
 	// char		**str;
 
-	tmp = *command;
+//	tmp = *command;
 	// if (tmp != NULL)
 	// {
 	// 	str = (char **)malloc(sizeof(char *) * count_args(info->token));
