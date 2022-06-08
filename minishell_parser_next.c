@@ -159,7 +159,6 @@ int	parser_next(t_command **command, t_info *info)
 	tmp = *command;
 	while (tmp != NULL)
 	{
-		printf ("tmp = %d\n",tmp->flag);
 		if (tmp->flag == 1)
 			opening_dollar(tmp, &i, info);
 		i = 0;

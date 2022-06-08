@@ -82,6 +82,7 @@ void		**ft_free_envp(char **envp);
 int			ft_strlen(char *str);
 int			ft_strcmp(char *str, char *cmp);
 int			init(t_info *info, char **env);
+void		ft_strcopy(char *dest, char *src);
 
 int			lexer(t_info *info, char *line);
 void		all_free(t_info *info, int flag, t_command **command);
@@ -93,7 +94,7 @@ int			skip_field(t_token **token, int x);
 
 int			parser_next(t_command **command, t_info *info);
 int			is_not_word(int x);
-int			parser(t_info *info, t_command **command);
+char		**parser(t_command **command);
 // void	set_word(char *res_word[7]);
 // int		init(t_info *info, char **env);
 #endif

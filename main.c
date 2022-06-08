@@ -31,6 +31,7 @@ int	main(int ag, char **av, char **env)
 	t_info		info;
 	char		*p;
 	t_command	*command;
+	char 		**str;
 
 	int i = 0;
 	(void) ag;
@@ -45,12 +46,16 @@ int	main(int ag, char **av, char **env)
 		lexer(&info, p);
 		ft_check_print(&info.token);
 		command = pre_parser(&info, p);
-//		parser(&info, &command);
+		str = parser(&command);
 		// parser(&info, &command);
-		ft_check_print2(&command);
+//		ft_check_print2(&command);
+		while (str[i] != NULL)
+			printf ("%s\n", str[i++]);
+		ft_free_envp(str);
+//		ft_check_print2(&command);
 		all_free(&info, 2, &command);
-		if (i == 0)
-			break;
+//		if (i == 0)
+		break;
 		i++;
 		free(p);
 		p = NULL;

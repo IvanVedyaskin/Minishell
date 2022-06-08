@@ -139,7 +139,7 @@ int	run_str(int token, char *p, t_command **command, int *i)
 			(*i)++;
 		if (is_token(p[*i]) == token)
 			++*i;
-		tmp = create_command(command, str_command_fields(p, tmp, *i), 1);
+		tmp = create_command(command, str_command_fields(p, tmp, *i), token % 2);
 	}
 	return (tmp);
 }
