@@ -55,8 +55,9 @@ int	main(int ag, char **av, char **env)
 //		ft_check_print2(&command);
 		all_free(&info, 2, &command);
 //		if (i == 0)
-		break;
-		i++;
+//		break;
+//		i++;
+		i = 0;
 		free(p);
 		p = NULL;
 	}

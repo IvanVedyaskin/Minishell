@@ -112,10 +112,8 @@ char	*ft_copy(char *dst, char *src, char *env)
 char	*re_command(char *str, char *env, int i)
 {
     int		count;
-//	int 	j;
 	char	*new_str;
 
-//	j = 0;
 	count = i++;
 	while (!is_not_word(str[i]))
 		++i;
@@ -126,6 +124,67 @@ char	*re_command(char *str, char *env, int i)
 	if (!new_str)
 		return (NULL);
 	new_str = ft_copy(new_str, str, env);
+	free(str);
+	return (new_str);
+}
+
+int 	count_status(int status)
+{
+	int	k;
+
+	k = 0;
+	if (status == 0)
+		return (1);
+	while (status != 0)
+	{
+		status = status / 10;
+		++k;
+	}
+	return (k);
+}
+
+void	ft_itoa(char *dst, int status, int *j)
+{
+	char	x[10];
+	int 	i;
+
+	i = 0;
+	while (status != 0)
+	{
+		x[i++] = (status % 10) + '0';
+		status = status / 10;
+	}
+	while (i != 0)
+		dst[(*j)++] = x[--i];
+}
+
+void	copy_question(char *dst, char *src, int status)
+{
+	int	i;
+	int j;
+
+	j = 0;
+	i = 0;
+	while (src[i] != '$')
+		dst[j++] = src[i++];
+	i += 2;
+	if (status == 0)
+		dst[j++] = '0';
+	else
+		ft_itoa(dst, status, &j);
+	while (src[i])
+		dst[j++] = src[i++];
+	dst[j] = '\0';
+}
+
+char	*question(char *str, int status)
+{
+	char	*new_str;
+
+	new_str = (char *)malloc(sizeof(char) * (ft_strlen(str) - 2 + count_status(status)));
+	if (!new_str)
+		return (NULL);
+	copy_question(new_str, str, status);
 	free(str);
 	return (new_str);
 }
@@ -142,6 +201,8 @@ int	opening_dollar(t_command *cmd, int *i, t_info *info)
 			tmp = check_env_var(info->envp_list, &(cmd->str[*i + 1]));
 			if (tmp != NULL)
 				cmd->str = re_command(cmd->str, tmp, *i);
+			else if (cmd->str[*i + 1] == '?')
+				cmd->str = question(cmd->str, info->status);
 			else
 				cmd->str = re_command(cmd->str, tmp, *i);
 		}
