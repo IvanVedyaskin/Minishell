@@ -1,33 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_lexer.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mmeredit <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/17 14:39:59 by mmeredit          #+#    #+#             */
+/*   Updated: 2022/06/17 14:40:01 by mmeredit         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-void	free_token(t_token **token)
-{
-	t_token	*tmp;
-
-	tmp = *token;
-	while (tmp->next != NULL)
-	{
-		tmp = tmp->next;
-		free(*token);
-		*token = tmp;
-	}
-	free(*token);
-}
-
-void	all_free(t_info *info, int flag)
-{
-	ft_free_envp(info->envp);
-	ft_free_list(&info->envp_list);
-	if (info->token != NULL)
-		free_token(&info->token);
-	if (flag == 0)
-		print_error(0);
-}
 
 int	create_list_token(t_token **token, int data)
 {
 	t_token	*tmp;
-	t_token *tmp2;
+	t_token	*tmp2;
 
 	tmp2 = *token;
 	tmp = (t_token *)malloc(sizeof(t_token));
@@ -48,7 +36,8 @@ int	create_list_token(t_token **token, int data)
 
 int	is_token(char c)
 {
-	if (c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r' || c == ' ')
+	if (c == '\t' || c == '\n' || c == '\v' || \
+			c == '\f' || c == '\r' || c == ' ')
 		return (SEP);
 	else if (c == 39)
 		return (FIELD);
@@ -88,11 +77,11 @@ int	token_not_redir(char c, int flag, t_info *info)
 		res = create_list_token(&info->token, PIPE);
 	flag = is_token(c);
 	if (res == 0)
-		all_free(info, 0);
+		all_free(info, 0, NULL);
 	return (flag);
 }
 
-int token_is_redir(char c, int *flag, int *i)
+int	token_is_redir(char c, int *flag, int *i)
 {
 	if (is_token(c) == REDIR_OUT)
 	{
@@ -118,7 +107,6 @@ int	lexer(t_info *info, char *line)
 	int		i;
 	int		flag;
 
-	(void) info;
 	i = 0;
 	flag = -1;
 	while (line[i])
@@ -131,5 +119,5 @@ int	lexer(t_info *info, char *line)
 		}
 		i++;
 	}
-	return (0);
+	return (all_check(info, line));
 }

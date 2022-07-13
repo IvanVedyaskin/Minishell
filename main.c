@@ -1,89 +1,100 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mmeredit <mmeredit@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/17 14:39:19 by mmeredit          #+#    #+#             */
+/*   Updated: 2022/07/08 17:18:42 by mmeredit         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-// Все команды исполняются в подпроцессах. Исключение - builtins
+int	parser_next(t_command **command, t_info *info)
+{
+	t_command	*tmp;
+	int			i;
 
+	i = 0;
+	tmp = *command;
+	while (tmp != NULL)
+	{
+		if (tmp->flag == 1)
+			opening_dollar(tmp, &i, info);
+		i = 0;
+		tmp = tmp->next;
+	}
+	return (0);
+}
 
-// int	parser(t_info *info, char *p)
-// {
-// 	return (1);	
-// }
+t_command	*pre_parser(t_info *info, char *p)
+{
+	t_command	*command;
+	int			i;
 
-char	*ft_readline(char *p)
+	i = 0;
+	command = NULL;
+	while (p[i])
+		run_str(is_token(p[i]), p, &command, &i);
+	if (command != NULL)
+		parser_next(&command, info);
+	return (command);
+}
+
+char	*ft_readline(char *p, t_info *info)
 {
 	p = readline("minishell$ ");
-	if (p && *p)
+	if (p)
 		add_history(p);
-	return(p);
+	else
+	{
+		printf ("exit\n");
+		all_free(info, 1, NULL);
+		exit(EXIT_SUCCESS);
+	}
+	return (p);
+}
+
+void	ft_minishell(char *p, t_info *info, t_command *command)
+{
+	char	**str;
+
+	str = NULL;
+	if (p != NULL && !ft_strcmp_v2(p, "\n"))
+	{
+		if (lexer(info, p) == 0)
+		{
+			command = pre_parser(info, p);
+			str = parser(&command);
+			if (str[0] != NULL)
+				ft_pipex(str, info);
+		}
+		str = ft_free_array(str);
+		all_free(info, 2, &command);
+	}
 }
 
 int	main(int ag, char **av, char **env)
 {
-	t_info	info;
-	char	*p;
+	t_info		info;
+	char		*p;
+	t_command	*command;
 
-	(void) ag;
 	(void) av;
+	(void) ag;
 	p = NULL;
+	command = NULL;
 	if (!init(&info, env))
 		return (write(2, "MEM NOT ALLOC!", 14));
-	while (1)
+	signal_handlers();
+	while (!info.exit_f)
 	{
-		p = ft_readline(p);
-		// break;
-		lexer(&info, p);
-		break;
-		// parser(&info, p);
+		p = ft_readline(p, &info);
+		ft_minishell(p, &info, command);
+		free(p);
+		p = NULL;
 	}
-	// printf ("%p\n", info.token);
-	all_free(&info, 1);
-	free(p);
 	return (0);
 }
-
-// FUTURE ENV
-	// int	i;
-	// int j;
-	// int x;
-
-	// j = 0;
-	// i = 0;
-	// while(i < 7)
-	// {
-	// 	x = ft_strcmp(info->res_word[i], p);
-	// 	if (x == 1)
-	// 	{
-	// 		i = 0;
-	// 		while (info->envp[i])
-	// 		{
-	// 			while (info->envp[i][j])
-	// 			{
-	// 				printf ("%c", info->envp[i][j]);
-	// 				j++;
-	// 			}
-	// 			j = 0;
-	// 			i++;
-	// 			printf ("\n");
-	// 		}
-	// 		return (0);
-	// 	}
-	// 	i++;
-	// }
-
-// Провекра листа
-
-	// t_list	*tmp;
-	// tmp = info->envp_list;
-	// while (tmp->next != NULL)
-	// {
-	// 	printf ("%s=", tmp->key);
-	// 	printf ("%s\n", tmp->value);
-	// 	tmp = tmp->next;
-	// }
-
-// Вывод токенов
-	// while (info.token->next != NULL)
-	// {
-	// 	printf ("%d ",info.token->token);
-	// 	info.token = info.token->next;
-	// }
-	// printf ("%d ",info.token->token);

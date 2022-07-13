@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_init.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mmeredit <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/17 14:39:53 by mmeredit          #+#    #+#             */
+/*   Updated: 2022/06/17 14:39:54 by mmeredit         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	set_word(char *res_word[7])
@@ -56,7 +68,7 @@ char	**init_envp(char **env)
 	{
 		envp[i] = (char *)malloc(ft_strlen(env[i]) * sizeof(char));
 		if (!*envp)
-			return ((char **)ft_free_envp(envp));
+			return ((char **)ft_free_array(envp));
 		ft_strcopy(envp[i], env[i]);
 		i++;
 	}
@@ -69,10 +81,13 @@ int	init(t_info *info, char **env)
 	info->envp_list = NULL;
 	set_word(info->res_word);
 	info->envp = init_envp(env);
-	if (info->envp == NULL)
-		print_error(0);
-	if (!start_lists(&info->envp_list, info->envp))
-		print_error(0);
+	info->status = 0;
 	info->token = NULL;
+	info->exit_f = 0;
+	info->envp_f = 0;
+	if (info->envp == NULL)
+		print_error(info, 0);
+	if (!start_lists(&info->envp_list, info->envp))
+		print_error(info, 0);
 	return (1);
 }

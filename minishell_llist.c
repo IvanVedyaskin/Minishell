@@ -1,13 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_llist.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hbecki <hbecki@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/17 14:40:16 by mmeredit          #+#    #+#             */
+/*   Updated: 2022/06/24 15:07:45 by hbecki           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-int	mem_lists(t_list **envp_list, char *str)
+int	mem_lists(t_lists **envp_list, char *str)
 {
-	t_list	*tmp;
-	t_list	*tmp2;
+	t_lists	*tmp;
+	t_lists	*tmp2;
 
-	// printf ("%p\n", *envp_list);
 	tmp2 = *envp_list;
-	tmp = (t_list *)malloc(sizeof(t_list));
+	tmp = (t_lists *)malloc(sizeof(t_lists));
 	if (!tmp)
 		return (0);
 	tmp->next = NULL;
@@ -75,7 +86,7 @@ int	key_value_mem(char *str, int flag)
 	return (++i);
 }
 
-int	start_lists(t_list **envp_list, char **envp)
+int	start_lists(t_lists **envp_list, char **envp)
 {
 	int	i;
 
@@ -89,9 +100,21 @@ int	start_lists(t_list **envp_list, char **envp)
 	return (1);
 }
 
-void	print_error(int flag)
+void	print_error(t_info *info, int flag)
 {
 	if (flag == 0)
 		perror("Memmory not allocate!");
-	exit(EXIT_FAILURE);
+	else if (flag < 0)
+	{
+		if (flag == -1)
+			write (2, "minishell: Excepted ' or \"\n", 28);
+		else if (flag == -2)
+			write (2, "minishell: Syntax error near unexpected token `|'\n", 51);
+		else if (flag == -3)
+			write (2, \
+			"syntax error near unexpected token `newline', `>' or `<'\n", 58);
+		info->status = 258;
+		return ;
+	}
+	exit (EXIT_FAILURE);
 }
